@@ -70,3 +70,11 @@
   height: 15px;
   cursor: pointer;
 }
+
+.input_text {
+  width: 540px;
+}
+
+.span_value {
+  width: 550px;
+}

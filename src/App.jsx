@@ -15,21 +15,43 @@ function App() {
 
     const onEnterPressedHandler = (event) => {
         if (event.key === 'Enter') {
-            submitHandler(event);
+            appendTodos(event);
         }
     };
 
-    const submitHandler = (event) => {
+    const appendTodos = () => {
         if (!isEmpty(trim(todoText))) {
             const appendedTodos = sortBy([...todos, {
                 id: uuidv4(),
                 text: todoText,
+                completed: false,
                 createdAt: new Date()
             }], 'createdAt');
             setTodos(appendedTodos.reverse());
             setTodoText('');
         }
     };
+
+    const removeTodoById = (id) => {
+            setTodos((oldTodos) => {
+                return (oldTodos || []).filter(todo => todo.id !== id);
+            });
+    };
+
+    const updateTodoById = (id, todoObj) => {
+            setTodos((oldTodos) => {
+                return (oldTodos || []).map(todo => {
+                    if (todo.id === id) {
+                        return {
+                            ...todo,
+                            ...todoObj,
+                            id: todo.id,
+                        };
+                    }
+                    return todo;
+                });
+            });
+    }
 
     return (
         <>
@@ -38,12 +60,12 @@ function App() {
                     <div className="label">
                         <span className="label-text">Todo </span>
                     </div>
-                    <input id="iptTodoValue" type="text" value={todoText} onChange={onTodoTextChangeHandler} onKeyDown={onEnterPressedHandler} placeholder="Type here" className="input input-bordered input-primary w-full max-w-xs" />
+                    <input id="iptTodoValue" type="text" value={todoText} onChange={onTodoTextChangeHandler} onKeyUp={onEnterPressedHandler} placeholder="Type here" className="input input-bordered input-primary w-full max-w-xs" />
                 </label>
-                <button onClick={submitHandler} className="btn btn-outline btn-primary">Add Item</button>
+                <button onClick={appendTodos} className="btn btn-outline btn-primary">Add Item</button>
             </div>
             {/* Todos */}
-            <TodoList todos={todos} />
+            <TodoList todos={todos} removeHandler={removeTodoById} updateHandler={updateTodoById} />
         </>
     );
 }

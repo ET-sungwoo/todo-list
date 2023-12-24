@@ -2,7 +2,7 @@ import {useState} from 'react';
 
 import TodoList from './components/TodoList';
 import {v4 as uuidv4} from 'uuid';
-import {chain, isEmpty, trim, sortBy} from "lodash-es";
+import {isEmpty, trim, sortBy} from "lodash-es";
 
 function App() {
 
@@ -21,11 +21,13 @@ function App() {
 
     const appendTodos = () => {
         if (!isEmpty(trim(todoText))) {
+            const now = new Date();
             const appendedTodos = sortBy([...todos, {
                 id: uuidv4(),
                 text: todoText,
                 completed: false,
-                createdAt: new Date()
+                createdAt: now,
+                updatedAt: now,
             }], 'createdAt');
             setTodos(appendedTodos.reverse());
             setTodoText('');
@@ -46,6 +48,7 @@ function App() {
                             ...todo,
                             ...todoObj,
                             id: todo.id,
+                            updatedAt: new Date(),
                         };
                     }
                     return todo;
@@ -54,19 +57,34 @@ function App() {
     }
 
     return (
-        <>
-            <div>
-                <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                        <span className="label-text">Todo </span>
+        <div className="flex flex-col w-full border-opacity-50">
+            <div className="flex px-5 py-5">
+                <div className="flex flex-col space-y-2">
+                    <h2 className="text-gray-70 text-xl font-bold">
+                        Todo List
+                    </h2>
+                    {/*<p>Join 5,000+ others and never miss out on new tips, tutorials, and more.</p>*/}
+                    <div className="flex flex-col gap-3 md:flex-row">
+                        <div className="form-control flex-grow">
+                            <input
+                                id="iptTodoValue"
+                                type="text"
+                                name="todoValue"
+                                placeholder="Type here"
+                                className="input input-bordered flex-grow"
+                                value={todoText}
+                                onChange={onTodoTextChangeHandler}
+                                onKeyUp={onEnterPressedHandler}
+                            />
+                        </div>
+                        <button className="btn btn-primary" onClick={appendTodos}>Add</button>
                     </div>
-                    <input id="iptTodoValue" type="text" value={todoText} onChange={onTodoTextChangeHandler} onKeyUp={onEnterPressedHandler} placeholder="Type here" className="input input-bordered input-primary w-full max-w-xs" />
-                </label>
-                <button onClick={appendTodos} className="btn btn-outline btn-primary">Add Item</button>
+                </div>
             </div>
+            <div className="divider" />
             {/* Todos */}
             <TodoList todos={todos} removeHandler={removeTodoById} updateHandler={updateTodoById} />
-        </>
+        </div>
     );
 }
 
